@@ -3,6 +3,7 @@ import os, time, re, sqlite3, sys, datetime
 from slackclient import SlackClient
 from dotenv import load_dotenv                                                                                                                                                                                   
 from os.path import join, dirname
+import re
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -12,6 +13,7 @@ sc = SlackClient(token)
 # constants
 RTM_READ_DELAY = 1
 ADD_COMMAND = "add"
+PLUS_COMMAND = "plus"
 INIT = "init"
 LIST_ALL_COMMANDS = "list all"
 TOTAL_COMMAND = "total"
@@ -89,7 +91,7 @@ def connect_db(*args):
         conn.close()
 
 
-def update_curses(operator):
+def update_curses(operator,value=0):
     conn = connect_db()
     cursor = conn.cursor()
 
@@ -109,7 +111,10 @@ def update_curses(operator):
         number_of_curses = 0
         
     if operator == 'plus':
-        number_of_curses +=  1
+        if value is None:
+            number_of_curses +=  1
+        else:
+            number_of_curses +=  int(value)
     elif operator == 'minus':
         number_of_curses -= 1
 
@@ -164,6 +169,7 @@ def handle_command(command, channel):
         response = """
     These are the commands:
     add - add a curse
+    plus x - add x curses
     list all commands - print this list
     total - brings the total of curses
     remove - remove a curse
@@ -171,6 +177,10 @@ def handle_command(command, channel):
 
     if command.startswith(ADD_COMMAND):
         response = update_curses('plus')
+    
+    if command.startswith(PLUS_COMMAND):
+        commands = re.split('\s+', command)
+        response = update_curses('plus',commands[1])
 
     if command.startswith(REMOVE_COMMAND):
         response = update_curses('minus')
