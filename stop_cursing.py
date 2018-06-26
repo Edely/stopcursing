@@ -111,8 +111,8 @@ def update_curses(operator,value=0):
         number_of_curses = 0
         
     if operator == 'plus':
-        if value is None:
-            number_of_curses +=  1
+        if value == 0:
+            number_of_curses +=  1 
         else:
             number_of_curses +=  int(value)
     elif operator == 'minus':
