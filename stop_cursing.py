@@ -44,7 +44,7 @@ def parse_direct_mention(message_text):
     return (matches.group(1), matches.group(2).strip()) if matches else (None, None)
 
 def connect_db(*args):
-    conn = sqlite3.connect("curses.db")
+    conn = sqlite3.connect(dirname(__file__) + "/curses.db")
     cursor = conn.cursor()
     while(conn is None):
         try:
